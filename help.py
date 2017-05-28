@@ -10,7 +10,7 @@ def list(path):
     scripts = set()
     for name in sorted(os.listdir(location)):
         if name.lower().endswith(".py"):
-            if not name.startswith("_") and name not in ["console.py"]:
+            if not name.startswith("_"):
                 try:
                     module = loader.load(os.path.join(location, name))
                     name = name.rsplit(".", 1)[0].lower()
