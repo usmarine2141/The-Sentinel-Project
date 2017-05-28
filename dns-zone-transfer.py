@@ -1,6 +1,6 @@
 from modules.utils import *
 import dns.query, dns.zone
-import argparse, socket, os
+import argparse, socket, sys, os
 
 
 __doc__ = "Requests a zone transfer (AXFR Query) from a DNS server."
@@ -49,7 +49,7 @@ class Script(object):
 
 
 
-if __name__ == "__main__":
+def parse_args(args: list = sys.argv[1:]):
     parser = argparse.ArgumentParser("dns-zone-transfer", description=__doc__)
     parser.add_argument("zone", type=str, help="The name of the zone to transfer.")
     parser.add_argument("-w", "--where", type=str, default="", help="String containing an IPv4 or IPv6 address where to send the message.")
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     parser.add_argument("--check-origin", type=bool, default=True, help="Should sanity checks of the origin node be done? The default is True.")
     parser.add_argument("--save", action="store_true", help="Save DNS Zone on ./dns-zones/{zone}.txt.")
     
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     args = {arg: getattr(args, arg) for arg in dir(args) if arg[0] != "_"}
     
     try:
@@ -81,3 +81,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(colored(f"[!] Failed to retrieve the DNS Zone from \"{args['zone']}\":", "red"))
         print(colored("    " + str(e), "red", True))
+
+if __name__ == "__main__":
+    parse_args()

@@ -1,18 +1,18 @@
 from modules import tor
 from modules.utils import colored
-import argparse
+import argparse, sys
 
 
 __doc__ = "Ephemeral hidden service (.onion) managing (create, list & close)."
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(__doc__)
+def parse_args(args: list = sys.argv[1:]):
+    parser = argparse.ArgumentParser("eph-hs", description=__doc__)
     parser.add_argument("-l", "--list", action="store_true", help="List active hidden services.")
     parser.add_argument("-c", "--close", nargs="+", help="Discontinue the specified hidden service.")
     parser.add_argument("-p", "--ports", nargs="+", help="Hidden service port or map of hidden service port to their targets.")
     parser.add_argument("-d", "--discard-key", action="store_true", help="Avoid providing the key back in our response.")
     parser.add_argument("-k", "--private-key", type=argparse.FileType(), default=None, help="Key for the service to use.")
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     
     try:
         if not tor.pids():
@@ -73,3 +73,6 @@ if __name__ == "__main__":
         print(colored(f" -  {e}", "red", True))
     except KeyboardInterrupt:
         print(colored("[!] Keyboard Interrupted!", "red"))
+
+if __name__ == "__main__":
+    parse_args()

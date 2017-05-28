@@ -1,4 +1,4 @@
-import argparse, time
+import argparse, time, sys
 from pprint import pprint
 from modules.utils import *
 from modules.haveibeenpwned import HIBP
@@ -19,13 +19,13 @@ def walk(resp):
                 print(colored("\n    - ".join(": ".join([k, v]) for k, v in value.items()), dark=True))
         print("")
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(__doc__)
+def parse_args(args: list = sys.argv[1:]):
+    parser = argparse.ArgumentParser("pwn-test", description=__doc__)
     parser.add_argument("-b", "--breach-search", metavar="account", type=str, help="Search the specified username or email address on public breaches ...")
     parser.add_argument("-p", "--paste-search", metavar="account", type=str, help="Search the specified username or email address on public pastes ...")
     parser.add_argument("-t", "--truncate-response", action="store_true", default=False, help="Truncate response to only the breach names instead of the entire breach object ...")
     parser.add_argument("-f", "--file", type=argparse.FileType(), help="Search the usernames/email addresses on the specified file (separated by newlines) for breached accounts ...")
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     try:
         hibp = HIBP()
@@ -69,3 +69,6 @@ if __name__ == "__main__":
         print(colored(f" -  {e}", "red", True))
     except KeyboardInterrupt:
         print(colored("[!] Keyboard Interrupted!", "red"))
+
+if __name__ == "__main__":
+    parse_args()

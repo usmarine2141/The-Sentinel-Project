@@ -1,4 +1,4 @@
-import dns.resolver, dns.message, argparse
+import dns.resolver, dns.message, argparse, sys
 from modules.utils import *
 
 
@@ -60,8 +60,9 @@ class DNMap(dns.resolver.Resolver):
                     except Exception as e:
                         print(colored(f" -  {name.ljust(self._max_rdtype_length)}") + colored(f"{e}", "red", dark=True))
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(__doc__)
+
+def parse_args(args: list = sys.argv[1:]):
+    parser = argparse.ArgumentParser("dnmap", description=__doc__)
     parser.add_argument("query", type=str, help="The query.")
     parser.add_argument("-t", "--timeout", type=int, default=8, help="The number of seconds to wait before the query times out.")
     parser.add_argument("-p", "--port", type=int, default=53, help="The port to which to send the message. The default is 53.")
@@ -69,7 +70,7 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--one-rr-per-rrset", action="store_true", default=None, help="Put each RR into its own RRset.")
     parser.add_argument("-e", "--use-edns", type=int, default=-1, help="The EDNS level to use. The default is -1 (no EDNS).")
     parser.add_argument("-s", "--want-dnssec", action="store_true", default=None, help="Should the query indicate that DNSSEC is desired?")
-    args = parser.parse_args().__dict__
+    args = parser.parse_args(args).__dict__
     
     dnmap = DNMap()
     try:
@@ -78,3 +79,6 @@ if __name__ == "__main__":
         print(colored(f" -  {e}", "red", True))
     except KeyboardInterrupt:
         print(colored("\n[!] Keyboard Interrupted!", "red"))
+
+if __name__ == "__main__":
+    parse_args()

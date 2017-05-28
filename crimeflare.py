@@ -1,7 +1,7 @@
 from dns.resolver import Resolver
 from modules.utils import *
 from modules.session import Session
-import re
+import re, sys, argparse
 
 
 __doc__ = "Uncovering bad guys hiding behind CloudFlare!"
@@ -58,13 +58,13 @@ class CrimeFlare(Session):
             print(colored(f"[!] {err_name}:", "red"))
             print(colored(f" -  {e}", "red", True))
 
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="crimeflare.com - Uncovering bad guys hiding behind CloudFlare ...")
+
+def parse_args(args: list = sys.argv[1:]):
+    parser = argparse.ArgumentParser("crimeflare", description="crimeflare.com - Uncovering bad guys hiding behind CloudFlare ...")
     parser.add_argument("-s", "-cfs", "--search", type=str, help="CloudFlare \"Protected\" Domain Search ...")
     parser.add_argument("-l", "-cfl", "--list", type=str, help="List CloudFlare domains using the specified Direct-Connect IP Address ...")
     parser.add_argument("-x", "--proxy", default="", type=str, help="Proxify session through this proxy ('proto://ip.add.re.ss:port/') ...")
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     
     cf = CrimeFlare()
     if args.proxy:
@@ -76,3 +76,6 @@ if __name__ == "__main__":
         cf.cflist(args.list)
     else:
         parser.print_help()
+
+if __name__ == "__main__":
+    parse_args()

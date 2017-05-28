@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from modules.utils import *
-import requests, socket
+import requests, socket, sys
 
 
 __doc__ = "Basic host location tracker using the JSON API provided by ip-api.com."
@@ -58,11 +58,12 @@ def track(host):
         print(colored(f"[!] Failed to track {repr(host)}:", "red"))
         print(colored(" -  " + str(e), "red", True))
 
-
-
-if __name__ == "__main__":
-    parser = ArgumentParser(description="This is a basic host location tracker using the JSON API provided by ip-api.com.")
+def parse_args(args: list = sys.argv[1:]):
+    parser = ArgumentParser("track", description="This is a basic host location tracker using the JSON API provided by ip-api.com.")
     parser.add_argument("host", type=str, help="Target hostname or IP Address ...")
     
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     track(args.host)
+
+if __name__ == "__main__":
+    parse_args()

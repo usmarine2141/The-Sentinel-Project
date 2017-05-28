@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from html2text import html2text
 from modules.utils import *
 from modules.session import Session
-import os
+import os, sys
 
 
 __doc__ = "Retrieves and parses data from unprotected server-status pages on Apache web servers."
@@ -52,14 +52,16 @@ class Script(Session):
             print(colored("    - " + "\n    - ".join([row for row in html2text(str(rows[1])).replace("**", "").split("\n") if row]), dark=True))
 
 
-
-if __name__ == "__main__":
-    parser = ArgumentParser(__doc__)
+def parse_args(args: list = sys.argv[1:]):
+    parser = ArgumentParser("apache-server-status", description=__doc__)
     parser.add_argument("target", type=str, help="Target webserver address or url")
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     try:
         script = Script(args.target)
         script.run()
     except Exception as e:
         print(colored(f"[!] Failed to retrieve server-status page info from \"{args.target}\":", "red"))
         print(colored(" -  " + str(e), "red", True))
+
+if __name__ == "__main__":
+    parse_args()

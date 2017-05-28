@@ -1,17 +1,17 @@
 from modules.heartbleed import Heartbleed
 from modules.utils import colored
-import argparse, os
+import argparse, sys, os
 
 
 __doc__ = "Check and exploit the heartbleed bug ..."
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(__doc__, epilog="TIP: This script can actually exploit HTTPS, SMTP, IMAP, POP3, XMPP and FTP services that work with the affected OpenSSL version.")
+def parse_args(args: list = sys.argv[1:]):
+    parser = argparse.ArgumentParser("heartbleed", description=__doc__, epilog="TIP: This script can actually exploit HTTPS, SMTP, IMAP, POP3, XMPP and FTP services that work with the affected OpenSSL version.")
     parser.add_argument("-u", "--url", type=str, help="Target URL: (e.g: 'http://hostname.ext:4433/', 'smtp://hostname.ext/')")
     parser.add_argument("-t", "--timeout", type=float, default=8, help="Timeout on socket operations (in seconds).")
     parser.add_argument("-d", "--dump-dir", type=str, default="", help="Directory to save dumped data on (Does not saves dump data if this have not been specified).")
     parser.add_argument("-f", "--file", type=argparse.FileType(), help="Target list (Sep. by newlines).")
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     
     if args.url:
         try:
@@ -39,3 +39,6 @@ if __name__ == "__main__":
                 break
     else:
         parser.print_help()
+
+if __name__ == "__main__":
+    parse_args()
