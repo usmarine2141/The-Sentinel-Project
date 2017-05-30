@@ -14,7 +14,7 @@ __doc__ = "Basic terminal utils ..."
 def colored(text, color="", dark=False):
     try:
         return termcolor.colored(text, color or "white", attrs=["dark"] if dark else [])
-    except Exception as e:
+    except:
         return text
 
 def pprint(obj, depth=0, check = None, color="", dark=True, title=True):

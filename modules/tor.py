@@ -11,23 +11,6 @@ pids = lambda: stem.util.system.pid_by_name("tor", multiple = True)
 resolvers = stem.util.connection.system_resolvers()
 connections = lambda pid=None, resolver=None: stem.util.connection.get_connections(resolver if resolver else self.resolvers[0], process_pid = pid if pid else self.pids()[0], process_name = "tor") if self.resolvers and self.pids else None
 
-def proxify(address: str = "127.0.0.1", port: int = 9150):
-    socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, address, port)
-    socket.socket = socks.socksocket
-    def getaddrinfo(*args):
-        return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", (args[0], args[1]))]
-    socket.getaddrinfo = getaddrinfo
-
-class SockSocket(socks.socksocket):
-    def __init__(self, family: socket.AddressFamily = socket.AddressFamily.AF_INET, type: socket.SocketKind = socket.SocketKind.SOCK_STREAM, proto: int = 0, address: str = "127.0.0.1", port: int = 9150, *args, **kwargs):
-        super(SockSocket, self).__init__(family, type, proto, *args, **kwargs)
-        self.set_proxy(socks.PROXY_TYPE_SOCKS5, address, port)
-        self.address = address
-        self.port = port
-    
-    def getaddrinfo(self, *args):
-        return [(socket.AF_INET, socket.SOCK_STREAM, 6, "", (args[0], args[1]))]
-
 class Controller(stem.control.Controller):
     def __init__(self, address: str = "127.0.0.1", port: int = "default", password: str = None, chroot_path: str = None, protocolinfo_response=None):
         if not stem.util.connection.is_valid_ipv4_address(address):
