@@ -6,7 +6,6 @@ try:
 except:
     readline = None
 
-
 class Console(object):
     def __init__(self, name: str = "", prompt: str = "", intro: str = "[i] Welcome to the {name} console!"):
         self.location = os.path.abspath(os.path.dirname(__file__))
@@ -59,8 +58,9 @@ class Console(object):
             except SystemExit:
                 pass
             except Exception as e:
-                print(colored(f"[!] {type(e).__name__}:", "red"))
-                print(colored(f" -  {e}", "red", True))
+                print(f"[!] {type(e).__name__}:")
+                if str(e):
+                    print(f" -  {e}")
     
     def complete(self, text: str, state: int):
         if state == 0:
@@ -74,15 +74,18 @@ class Console(object):
             return None
 
 if __name__ == "__main__":
-    c = Console("Sentinella", intro="""
-  _________              __  .__              .__  .__          
- /   _____/ ____   _____/  |_|__| ____   ____ |  | |  | _____   
- \_____  \_/ __ \ /    \   __\  |/    \_/ __ \|  | |  | \__  \  
- /        \  ___/|   |  \  | |  |   |  \  ___/|  |_|  |__/ __ \_
-/_______  /\___  >___|  /__| |__|___|  /\___  >____/____(____  /
-        \/     \/     \/             \/     \/               \/
-        
-                We can see you ...
-""")
-    c.loop()
-    exit()
+    try:
+        c = Console("Sentinella", intro="""
+      _________              __  .__              .__  .__          
+     /   _____/ ____   _____/  |_|__| ____   ____ |  | |  | _____   
+     \_____  \_/ __ \ /    \   __\  |/    \_/ __ \|  | |  | \__  \  
+     /        \  ___/|   |  \  | |  |   |  \  ___/|  |_|  |__/ __ \_
+    /_______  /\___  >___|  /__| |__|___|  /\___  >____/____(____  /
+            \/     \/     \/             \/     \/               \/
+            
+                    We can see you ...
+    """)
+        c.loop()
+    except Exception as e:
+        print(colored(f"[!] {type(e).__name__}:", "red"))
+        print(colored(f" -  {e}", "red", True))

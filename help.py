@@ -14,7 +14,7 @@ def list(path):
                 try:
                     module = loader.load(os.path.join(location, name))
                     name = name.rsplit(".", 1)[0].lower()
-                    doc = module.__doc__ or "No description available."
+                    doc = module.__doc__.split("\n")[0] or "No description available."
                     if hasattr(module, "parse_args"):
                         print(colored(f" -  {name}: ") + colored(f"{doc}", dark=True))
                 except Exception as e:
