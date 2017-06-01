@@ -6,6 +6,7 @@ try:
 except:
     readline = None
 
+
 class Console(object):
     def __init__(self, name: str = "", prompt: str = "", intro: str = "[i] Welcome to the {name} console!"):
         self.location = os.path.abspath(os.path.dirname(__file__))
@@ -18,6 +19,19 @@ class Console(object):
             readline.parse_and_bind("tab: complete")
         print(colored(intro.format(**locals()), "green"))
         self.exec("help")
+
+    def exec(self, command: str, args: list = []):
+        try:
+            module = loader.load(os.path.join(self.location, command + ".py"))
+            module.parse_args(args)
+        except SystemExit:
+            pass
+        except (KeyboardInterrupt, Exception) as e:
+            print(colored(f"[!] {type(e).__name__}:", "red"))
+            if str(e):
+                print(colored(f" -  {e}", "red", True))
+        except:
+            print(colored(f"[!] Script raised an unknown exception type. Aborting execution ...", "red"))
     
     def scripts(self):
         scripts = set()
@@ -32,7 +46,33 @@ class Console(object):
                     pass
         return scripts
     
-    def loop(self):
+    def complete(self, text: str, state: int):
+        text = text.lstrip()
+        words = text.split(" ")
+        if state == 0:
+            words = readline.get_line_buffer().split()
+            if len(words) == 1:
+                self.matches = [s for s in self.scripts() if s.startswith(text)]
+            elif len(words) >= 2:
+                if "/" in words[-1] or "\\" in words[-1]:
+                    path = os.path.abspath(words[-1]).replace("\\", "/")
+                    if os.path.isdir(path):
+                        directory = path
+                        filename = ""
+                    else:
+                        directory = os.path.dirname(path)
+                        filename = os.path.basename(path)
+                    self.matches = [name for name in os.listdir(directory) if name.startswith(filename)]
+                else:
+                    self.matches = [s for s in self.scripts() if s.startswith(text)]
+            else:
+                self.matches = list(self.scripts())
+        try:
+            return self.matches[state]
+        except IndexError:
+            return None
+    
+    def interact(self):
         while True:
             try:
                 command, *args = input("\n" + colored(self.prompt, "yellow")).strip().split(" ")
@@ -55,23 +95,10 @@ class Console(object):
                         pass
                 if _quit:
                     break
-            except SystemExit:
-                pass
             except Exception as e:
-                print(f"[!] {type(e).__name__}:")
+                print(colored(f"[!] {type(e).__name__}:", "red"))
                 if str(e):
-                    print(f" -  {e}")
-    
-    def complete(self, text: str, state: int):
-        if state == 0:
-            if text:
-                self.matches = [s for s in self.scripts() if s.startswith(text)]
-            else:
-                self.matches = list(self.scripts())
-        try:
-            return self.matches[state]
-        except IndexError:
-            return None
+                    print(colored(f" -  {e}", "red", True))
 
 if __name__ == "__main__":
     try:
@@ -85,7 +112,7 @@ if __name__ == "__main__":
             
                     We can see you ...
     """)
-        c.loop()
+        c.interact()
     except Exception as e:
         print(colored(f"[!] {type(e).__name__}:", "red"))
         print(colored(f" -  {e}", "red", True))

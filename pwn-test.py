@@ -1,7 +1,6 @@
 import argparse, time, sys
-from pprint import pprint
 from modules.utils import *
-from modules.haveibeenpwned import HIBP
+from modules.apis.haveibeenpwned import API
 
 
 __doc__ = "Check if you have an account that has been compromised in a data breach."
@@ -28,27 +27,24 @@ def parse_args(args: list = sys.argv[1:]):
     args = parser.parse_args(args)
 
     try:
-        hibp = HIBP()
+        hibp = API()
         if args.breach_search:
             resp = hibp.breach_search(args.breach_search, truncateResponse=args.truncate_response)
         elif args.paste_search:
             resp = hibp.paste_search(args.paste_search)
         elif args.file:
-            for line in args.file:
+            lines = sorted(set([line.strip() for line in args.file if line.strip()]))
+            print(colored(f"[i] Executing checks against {len(lines)} targets ..."))
+            for line in lines:
                 try:
-                    line = line.strip()
-                    if not line:
-                        continue
                     resp = hibp.breach_search(line, truncateResponse=args.truncate_response)
-                    #if resp.status_code != 404:
                     if resp.status_code == 200:
-                        print(colored(f"[+] {line} - {', '.join([i['Name'] for i in resp.json()]) if resp.status_code == 200 else (hibp.codes[resp.status_code] if resp.status_code in hibp.codes else resp.reason)}"))
+                        print(colored(f" -  {line}: ") + colored(f"{', '.join([i['Name'] for i in resp.json()]) if resp.status_code == 200 else (hibp.codes[resp.status_code] if resp.status_code in hibp.codes else resp.reason)}", dark=True))
                     time.sleep(2)
                 except Exception as e:
-                    print(colored(f"[!] {type(e).__name__}:", "red"))
-                    print(colored(f" -  {e}", "red", True))
+                    print(colored(f" -  {type(e).__name__}: ", "red") + colored(f"{e}", "red", True))
                 except KeyboardInterrupt:
-                    print(colored("[!] Keyboard Interrupted!", "red"))
+                    print(colored("\n[!] Keyboard Interrupted!", "red"))
                     break
             exit()
         else:

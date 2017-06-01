@@ -1,4 +1,4 @@
-from modules import httpbl
+from modules.apis.dnsbl import API
 from modules.utils import pprint, colored
 import argparse, sys
 
@@ -12,7 +12,7 @@ def parse_args(args: list = sys.argv[1:]):
     args = parser.parse_args(args)
     
     try:
-        dnsbl = httpbl.DNSbl(args.api_key)
+        dnsbl = API(args.api_key)
         info = dnsbl.query(args.host)
         if info["message"]:
             raise Exception(info["message"])
