@@ -20,11 +20,21 @@ def colored(text, color="", dark=False):
 def pprint(obj, depth=0, check = None, color="", dark=True, title=True):
     if not check:
         check = lambda x: str(x).strip()
-    prefix = f"{'    ' * (depth-1)}{' -  ' if depth == 1 else '- '}"
+    prefix = ""
+    if depth == 0:
+        prefix = " -  "
+    elif depth == 1:
+        prefix = "    - "
+    else:
+        prefix = "    " + ("  " * (depth-1)) + "- "
+    
     if isinstance(obj, dict):
         for key, value in obj.copy().items():
             if title:
-                key = key.replace("_", "-").title()
+                if key.islower():
+                    key = key.replace("_", "-").title()
+                elif "_" not in key:
+                    key = f"{key[0].upper()}{key[1:]}"
             if check(value):
                 if isinstance(value, (dict, list, tuple)):
                     print(colored(f"{prefix}{key}:", color))
@@ -33,7 +43,8 @@ def pprint(obj, depth=0, check = None, color="", dark=True, title=True):
                     print(colored(f"{prefix}{key}: ", color) + colored(f"{value}", color, dark))
     elif isinstance(obj, (tuple, list)):
         for value in obj:
-            pprint(obj, depth, check, color, dark, title)
+            pprint(value, depth, check, color, dark, title)
+            print("")
     else:
-        if check(value):
+        if check(obj):
             print(colored(f"{prefix}{obj}", color, dark))
