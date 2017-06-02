@@ -50,10 +50,9 @@ class Console(object):
         text = text.lstrip()
         words = text.split(" ")
         if state == 0:
+            self.matches = [s for s in self.scripts() if s.startswith(text)]
             words = readline.get_line_buffer().split()
-            if len(words) == 1:
-                self.matches = [s for s in self.scripts() if s.startswith(text)]
-            elif len(words) >= 2:
+            if len(words) >= 2:
                 if "/" in words[-1] or "\\" in words[-1]:
                     path = os.path.abspath(words[-1]).replace("\\", "/")
                     if os.path.isdir(path):
@@ -62,11 +61,7 @@ class Console(object):
                     else:
                         directory = os.path.dirname(path)
                         filename = os.path.basename(path)
-                    self.matches = [name for name in os.listdir(directory) if name.startswith(filename)]
-                else:
-                    self.matches = [s for s in self.scripts() if s.startswith(text)]
-            else:
-                self.matches = list(self.scripts())
+                    self.matches += [name for name in os.listdir(directory) if name.startswith(filename)]
         try:
             return self.matches[state]
         except IndexError:
@@ -83,6 +78,8 @@ class Console(object):
                         self.exec(command, args)
                     else:
                         raise ValueError(f"{repr(command)} is not recognized as an internal command or script ...")
+            except SystemExit:
+                pass
             except KeyboardInterrupt as e:
                 print("\n" + colored(f"[!] Are you sure you want to quit {self.name}? (enter 'Y' to confirm)", "yellow"))
                 _quit = False
