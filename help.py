@@ -4,6 +4,7 @@ from modules.utils import colored
 
 
 __doc__ = "Displays this message."
+term_size = os.get_terminal_size().columns
 
 def list(path):
     location = os.path.abspath(os.path.dirname(__file__))
@@ -17,9 +18,13 @@ def list(path):
                 try:
                     module = loader.load(path)
                     name = name.rsplit(".", 1)[0]
-                    doc = module.__doc__.split("\n")[0] or "No description available."
+                    doc = ""
+                    for word in (module.__doc__.split("\n")[0] or "No description available.").split(" "):
+                        if len(doc.split("\n")[-1]) >= term_size - (len(name) + 7) or len(doc.split("\n")[-1] + word + " ") >= term_size - (len(name) + 7):
+                            doc += "\n"
+                        doc += word + " "
                     if hasattr(module, "parse_args"):
-                        print(colored(f" -  {name}: ") + colored(f"{doc}", dark=True))
+                        print(colored(f" -  {name}: ") + colored(("\n" + (" " * (len(name) + 6))).join(doc.split("\n")), dark=True))
                 except:
                     pass
 
