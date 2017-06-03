@@ -114,8 +114,8 @@ def parse_args(args: list = sys.argv[1:]):
             if name not in firewalls:
                 detected = check(resp)
                 if detected:
-                    print(colored(f"[i] Web Application Firewall {repr(name)} detected!"))
                     firewalls.append(name)
+    print(colored(f"[i] Detected Web Application Firewall{'s' if len(firewalls) != 1 else ''}: {', '.join(firewalls)}"))
     
     resp_times = [resp.elapsed.total_seconds() for resp in responses]
     if resp_times:
