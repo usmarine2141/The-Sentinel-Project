@@ -7,17 +7,20 @@ __doc__ = "Displays this message."
 
 def list(path):
     location = os.path.abspath(os.path.dirname(__file__))
-    scripts = set()
     for name in sorted(os.listdir(location)):
-        if name.lower().endswith(".py"):
-            if not name.startswith("_"):
+        path = os.path.join(location, name)
+        if not name.startswith("_") and name not in ["modules", "console.py"]:
+            #if os.path.isdir(path) and os.path.isfile(os.path.join(path, "__init__.py")):
+            #    path = os.path.join(path, "__init__.py")
+            
+            if os.path.isfile(path) and path.endswith(".py"):
                 try:
-                    module = loader.load(os.path.join(location, name))
-                    name = name.rsplit(".", 1)[0].lower()
+                    module = loader.load(path)
+                    name = name.rsplit(".", 1)[0]
                     doc = module.__doc__.split("\n")[0] or "No description available."
                     if hasattr(module, "parse_args"):
                         print(colored(f" -  {name}: ") + colored(f"{doc}", dark=True))
-                except Exception as e:
+                except:
                     pass
 
 def parse_args(args: list = sys.argv[1:]):

@@ -25,7 +25,9 @@ class DNMap(dns.resolver.Resolver):
                     if isinstance(value, bytes):
                         value = value.decode("ascii", errors="replace")
                     elif isinstance(value, (list, tuple)):
-                        value = ("\n" + (" " * len(s))).join(sorted([i.decode("ascii", errors="replace") if isinstance(i, bytes) else str(i) for i in value]))
+                        value = ("\n" + (" " * len(s))).join(sorted([i.decode("ascii", errors="replace") if isinstance(i, bytes) else
+                                                                     (("\n" + (" " * (len(s) + 1))).join(str(i).split(" ")) if record.rdtype == 16 else str(i))
+                                                                    for i in value]))
                     print(colored(s + f"{value}", dark=True))
                     extra = True
     

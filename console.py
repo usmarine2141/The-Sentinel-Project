@@ -21,8 +21,10 @@ class Console(object):
         self.exec("help")
 
     def exec(self, command: str, args: list = []):
+        command = command.lower()
+        #scripts = self.scripts()
         try:
-            module = loader.load(os.path.join(self.location, command + ".py"))
+            module = loader.load(os.path.join(self.location, command + ".py"))#scripts[command])
             module.parse_args(args)
         except SystemExit:
             pass
@@ -34,17 +36,22 @@ class Console(object):
             print(colored(f"[!] Script raised an unknown exception type. Aborting execution ...", "red"))
     
     def scripts(self):
-        scripts = set()
-        for name in os.listdir(self.location):
-            if name.lower().endswith(".py"):
-                try:
-                    module = loader.load(os.path.join(self.location, name))
-                    name = name.rsplit(".", 1)[0]
-                    if hasattr(module, "parse_args"):
-                        scripts.add(name.lower())
-                except:
-                    pass
-        return scripts
+        scripts = set()#{}
+        for name in sorted(os.listdir(self.location)):
+            path = os.path.join(self.location, name)
+            if not name.startswith("_") and name not in ["modules", "console.py"]:
+                #if os.path.isdir(path) and os.path.isfile(os.path.join(path, "__init__.py")):
+                #    path = os.path.join(path, "__init__.py")
+                
+                if os.path.isfile(path) and path.endswith(".py"):
+                    try:
+                        module = loader.load(path)
+                        name = name.rsplit(".", 1)[0].lower()
+                        if hasattr(module, "parse_args"):
+                            scripts.add(name)#[name] = path
+                    except:
+                        pass
+        return sorted(scripts)
     
     def complete(self, text: str, state: int):
         text = text.lstrip()
