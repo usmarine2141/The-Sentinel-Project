@@ -71,27 +71,30 @@ def parse_args(args: list = sys.argv[1:]):
             "Retries": head.raw.retries.total}, title=False)
     
     headers = dict(head.headers)
-    for name in ["Set-Cookie"]:
+    for name in ["Set-Cookie", "Link"]:
         while name in headers:
             del headers[name]
     
     if head.links:
         print("")
         print(colored(f"[i] Server Links: ({len(head.links)})"))
-        print(colored(" -  " + "\n -  ".join(": ".join(link) for link in head.links.items()), dark=True))
-        
+        pprint(head.links)
+    
     if headers:
         print("")
         print(colored(f"[i] Server Headers: ({len(headers)})"))
         pprint(headers)
     
     if head.cookies:
+        cookies = {}
         print("")
         print(colored(f"[i] Server Cookies: ({len(head.cookies)})"))
         for cookie in sorted(head.cookies, key=lambda x: x.name):
             name, value = cookie.name, cookie.value
-            tags = sorted(set(["Secure" if cookie.secure else "Insecure"] + list(cookie._rest.keys())))
-            print(colored(f" -  [{', '.join(tags)}] {name}: ") + colored(f"{value[:79] + '[...]' if len(value) > (79 - len(name)) else value}", dark=True))
+            tags = tuple(sorted(set(["Secure" if cookie.secure else "Insecure"] + list(cookie._rest.keys()))))
+            cookies[name] = {"tags": tags, "value": value}
+            #print(colored(f" -  [{', '.join(tags)}] {name}: ") + colored(f"{value[:79] + '[...]' if len(value) > (79 - len(name)) else value}", dark=True))
+        pprint(cookies)
     
     responses = []
     try:
@@ -115,7 +118,8 @@ def parse_args(args: list = sys.argv[1:]):
                 detected = check(resp)
                 if detected:
                     firewalls.append(name)
-    print(colored(f"[i] Detected Web Application Firewall{'s' if len(firewalls) != 1 else ''}: {', '.join(firewalls)}"))
+    if firewalls:
+        print(colored(f"[i] Detected Web Application Firewall{'s' if len(firewalls) != 1 else ''}: {', '.join(firewalls)}"))
     
     resp_times = [resp.elapsed.total_seconds() for resp in responses]
     if resp_times:
