@@ -1,4 +1,4 @@
-import sys
+import sys, os
 
 global colorama, termcolor
 try:
@@ -9,6 +9,7 @@ except Exception as e:
 
 __all__ = ["colored", "pprint"]
 __doc__ = "Basic terminal utils ..."
+term_size = os.get_terminal_size().columns
 
 
 def colored(text, color="", dark=False):
@@ -40,11 +41,23 @@ def pprint(obj, depth=0, check = None, color="", dark=True, title=True):
                     print(colored(f"{prefix}{key}:", color))
                     pprint(value, depth+1, check, color, dark, title)
                 else:
-                    print(colored(f"{prefix}{key}: ", color) + colored(f"{value}", color, dark))
+                    value = str(value)
+                    text = ""
+                    for word in value.split():
+                        if len(text.split("\n")[-1]) >= term_size - (len(key) + len(prefix) + 2) or len(text.split("\n")[-1] + word + " ") >= term_size - (len(key) + len(prefix) + 2):
+                            text += "\n" + (" " * (len(key) + 2 + len(prefix)))
+                        text += word + " "
+                    print(colored(f"{prefix}{key}: ", color) + colored(f"{text}", color, dark))
     elif isinstance(obj, (tuple, list)):
         for value in obj:
             pprint(value, depth, check, color, dark, title)
             print("")
     else:
         if check(obj):
-            print(colored(f"{prefix}{obj}", color, dark))
+            obj = str(obj)
+            text = ""
+            for word in obj.split():
+                if len(text.split("\n")[-1]) >= term_size - (len(key) + len(prefix) + 2) or len(text.split("\n")[-1] + word + " ") >= term_size - (len(key) + len(prefix) + 2):
+                    text += "\n" + (" " * len(prefix))
+                text += word + " "
+            print(colored(f"{prefix}{text}: ", color, dark))
