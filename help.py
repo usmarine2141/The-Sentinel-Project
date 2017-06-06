@@ -11,9 +11,8 @@ def list(path):
     for name in sorted(os.listdir(location)):
         path = os.path.join(location, name)
         if not name.startswith("_") and name not in ["modules", "console.py"]:
-            #if os.path.isdir(path) and os.path.isfile(os.path.join(path, "__init__.py")):
-            #    path = os.path.join(path, "__init__.py")
-            
+            if os.path.isdir(path) and os.path.isfile(os.path.join(path, "main.py")):
+                path = os.path.join(path, "main.py")
             if os.path.isfile(path) and path.endswith(".py"):
                 try:
                     module = loader.load(path)

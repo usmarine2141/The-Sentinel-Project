@@ -9,7 +9,7 @@ def parse_args(args: list = sys.argv[1:]):
     parser = argparse.ArgumentParser("full-contact", description=__doc__)
     parser.add_argument("query", type=str, help="Search query.")
     parser.add_argument("-t", "--type", type=str, default="email", help="Query type (email, twitter, phone, domain or company; Default: email).")
-    parser.add_argument("-k", "--api-key", type=str, default="", help="FullContact API key.")
+    parser.add_argument("-k", "--api-key", type=str, default="978e7c52735a8420", help="FullContact API key.")
     args = parser.parse_args(args)
     
     api = API(args.api_key)

@@ -13,45 +13,29 @@ class Console(object):
         
         self.name = name
         self.prompt = prompt or f"#{name}> "
-        self.exec = lambda command, args = []: loader.load(os.path.join(self.location, command + ".py")).parse_args(args)
+        self.exec = lambda command, args = []: loader.load(self.scripts()[command.lower()]).parse_args(args)
         if readline:
             readline.set_completer(self.complete)
             readline.parse_and_bind("tab: complete")
         print(colored(intro.format(**locals()), "green"))
         self.exec("help")
-
-    def exec(self, command: str, args: list = []):
-        command = command.lower()
-        #scripts = self.scripts()
-        try:
-            module = loader.load(os.path.join(self.location, command + ".py"))#scripts[command])
-            module.parse_args(args)
-        except SystemExit:
-            pass
-        except (KeyboardInterrupt, Exception) as e:
-            print(colored(f"[!] {type(e).__name__}:", "red"))
-            if str(e):
-                print(colored(f" -  {e}", "red", True))
-        except:
-            print(colored(f"[!] Script raised an unknown exception type. Aborting execution ...", "red"))
     
     def scripts(self):
-        scripts = set()#{}
-        for name in sorted(os.listdir(self.location)):
+        scripts = {}
+        for name in sorted(set(os.listdir(self.location))):
             path = os.path.join(self.location, name)
             if not name.startswith("_") and name not in ["modules", "console.py"]:
-                #if os.path.isdir(path) and os.path.isfile(os.path.join(path, "__init__.py")):
-                #    path = os.path.join(path, "__init__.py")
-                
+                if os.path.isdir(path) and os.path.isfile(os.path.join(path, "main.py")):
+                    path = os.path.join(path, "main.py")
                 if os.path.isfile(path) and path.endswith(".py"):
                     try:
                         module = loader.load(path)
                         name = name.rsplit(".", 1)[0].lower()
                         if hasattr(module, "parse_args"):
-                            scripts.add(name)#[name] = path
+                            scripts[name] = path
                     except:
                         pass
-        return sorted(scripts)
+        return dict(sorted(set(scripts.items()), key=lambda x: x[0]))
     
     def complete(self, text: str, state: int):
         text = text.lstrip()
@@ -103,6 +87,7 @@ class Console(object):
                 print(colored(f"[!] {type(e).__name__}:", "red"))
                 if str(e):
                     print(colored(f" -  {e}", "red", True))
+
 
 if __name__ == "__main__":
     try:
