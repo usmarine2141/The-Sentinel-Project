@@ -44,20 +44,21 @@ def pprint(obj, depth=0, check = None, color="", dark=True, title=True):
                     value = str(value)
                     text = ""
                     for word in value.split():
-                        if len(text.split("\n")[-1]) >= term_size - (len(key) + len(prefix) + 2) or len(text.split("\n")[-1] + word + " ") >= term_size - (len(key) + len(prefix) + 2):
+                        if len(word) < term_size and len(text.split("\n")[-1]) >= term_size - (len(key) + len(prefix) + 2) or len(text.split("\n")[-1] + word + " ") >= term_size - (len(key) + len(prefix) + 2):
                             text += "\n" + (" " * (len(key) + 2 + len(prefix)))
                         text += word + " "
                     print(colored(f"{prefix}{key}: ", color) + colored(f"{text}", color, dark))
-    elif isinstance(obj, (tuple, list)):
+    elif isinstance(obj, (tuple, list, set)):
         for value in obj:
             pprint(value, depth, check, color, dark, title)
-            print("")
+            if isinstance(value, dict):
+                print("")
     else:
         if check(obj):
             obj = str(obj)
             text = ""
             for word in obj.split():
-                if len(text.split("\n")[-1]) >= term_size - (len(key) + len(prefix) + 2) or len(text.split("\n")[-1] + word + " ") >= term_size - (len(key) + len(prefix) + 2):
+                if len(word) < term_size and len(text.split("\n")[-1]) >= term_size - (len(prefix) + 2) or len(text.split("\n")[-1] + word + " ") >= term_size - (len(prefix) + 2):
                     text += "\n" + (" " * len(prefix))
                 text += word + " "
-            print(colored(f"{prefix}{text}: ", color, dark))
+            print(colored(f"{prefix}{text}", color, dark))
