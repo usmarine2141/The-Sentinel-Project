@@ -21,6 +21,7 @@ def parse_args(args: list = sys.argv[1:]):
     
     virus_db = sqlite3.connect(os.path.join(os.path.abspath(os.path.dirname(__file__)), "resources/virus-signatures.db"))
     viruses = virus_db.cursor()
+    print(colored(f"[i] Virus Signature database currently have {sum(list(viruses.execute('SELECT COUNT(*) FROM signatures'))[0])} valid signatures ..."))
     
     for dirpath, dirnames, filenames in os.walk(os.path.abspath(args.directory)):
         for filename in filenames:
@@ -34,12 +35,13 @@ def parse_args(args: list = sys.argv[1:]):
                     data = file.read(512 + sig_size)
                     file.close()
                     if data.startswith(signature):
-                        print(colored(f"[!] {repr(name)} malware have been detected:".ljust(term_size - 1)))
+                        print(colored(f"[!] {repr(name)} have been detected:".ljust(term_size - 1)))
                         print(colored(f" -  File: ") + colored(f"{repr(filepath)}", dark=True))
                         print(colored(f" -  Signature: ({sig_size} bytes)"))
                         hexdump(signature, "    ")
-                        print(colored(f" -  First 512 bytes of file (from byte #{sig_size} to #{512 + sig_size}):"))
-                        hexdump(data[sig_size:], "    ")
+                        first_bytes = data[sig_size:]
+                        print(colored(f" -  First {len(first_bytes)} bytes of file (from byte #{sig_size} to #{len(first_bytes)}):"))
+                        hexdump(first_bytes, "    ")
                         print("")
                         print(colored(f"[?] Do you want to delete this malicious file from your computer ?", "yellow"))
                         print(colored(" -  Enter 'Y' or 'Yes' (without quotes) to confirm.", "yellow", True))
