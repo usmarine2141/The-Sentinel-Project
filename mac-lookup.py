@@ -41,3 +41,7 @@ def parse_args(args: list = sys.argv[1:]):
     except Exception as e:
         print(colored(f"[!] {type(e).__name__}:", "red"))
         print(colored(f" -  {e}", "red", True))
+
+
+if __name__ == "__main__":
+    parse_args()

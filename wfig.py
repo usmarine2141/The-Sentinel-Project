@@ -128,4 +128,9 @@ def parse_args(args: list = sys.argv[1:]):
         print(colored(f" -  Minimum: {min(resp_times):.02f}s   -   Average: {float(sum(resp_times)) / max(len(resp_times), 1):.02f}s   -   Maximum: {max(resp_times):.02f}s", dark=True))
 
 if __name__ == "__main__":
-    parse_args()
+    try:
+        parse_args()
+    except (Exception, KeyboardInterrupt) as e:
+        print(colored(f"[!] {type(e).__name__}" + (":" if e else ""), "red"))
+        if e:
+            print(colored(f" -  {e}", "red", True))

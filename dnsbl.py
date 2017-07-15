@@ -8,7 +8,7 @@ __doc__ = "Identifies spammers and the spambots they use to scrape addresses fro
 def parse_args(args: list = sys.argv[1:]):
     parser = argparse.ArgumentParser("dnsbl", description=__doc__)
     parser.add_argument("host", type=str, help="Target hostname or ip address.")
-    parser.add_argument("-k", "--api-key", type=str, default="vztjisbgwwij", help="Your HTTP:Bl Access Key.")
+    parser.add_argument("-k", "--api-key", type=str, help="Your HTTP:Bl Access Key.")
     args = parser.parse_args(args)
     
     try:
