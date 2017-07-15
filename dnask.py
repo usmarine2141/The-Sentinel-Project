@@ -6,14 +6,14 @@ __doc__ = "Utility to build and execute DNS queries ..."
 
 def parse_args(args: list = sys.argv[1:]):
     parser = argparse.ArgumentParser("dnask", description=__doc__)
-    parser.add_argument("query", type=str, metavar="STRING", help="Query string.")
+    parser.add_argument("query", type=str, help="Query string.")
     parser.add_argument("-t", "--rdtype", type=str, default=1, help="Query type.")
     parser.add_argument("-c", "--rdclass", type=str, default=1, help="Query class.")
     parser.add_argument("-m", "--metaquery", action="store_true", help="Execute as MetaQuery.")
     parser.add_argument("-s", "--source", type=str, default=socket.gethostbyname(socket.gethostname()), help="Source address.")
     parser.add_argument("-sP", "--source-port", type=int, default=random.randint(1, 65535), help="Source port.")
     parser.add_argument("--tcp", action="store_true", help="Use TCP to make the query.")
-    parser.add_argument("-ns", "--nameservers", nargs="+", type=str, metavar="NAMESERVER", help="A list of nameservers to query. Each nameserver is a string which contains the IP address of a nameserver.")
+    parser.add_argument("-ns", "--nameservers", nargs="+", type=str, help="A list of nameservers to query. Each nameserver is a string which contains the IP address of a nameserver.")
     parser.add_argument("-p", "--port", type=int, default=53, help="The port to which to send queries (Defaults to 53).")
     parser.add_argument("-T", "--timeout", type=int, default=8, help="The number of seconds to wait for a response from a server, before timing out.")
     parser.add_argument("-l", "--lifetime", type=int, default=8, help="The total number of seconds to spend trying to get an answer to the question. If the lifetime expires, a Timeout exception will occur.")
