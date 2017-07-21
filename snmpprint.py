@@ -5,7 +5,7 @@ import argparse, netaddr, time, sys
 
 def parse_args(args: list = sys.argv[1:]):
     parser = argparse.ArgumentParser("snmpprint", description=__doc__)
-    parser.add_argument("-t", "--target", type=str, help="Target address or hostname.")
+    parser.add_argument("-T", "--target", type=str, help="Target address or hostname.")
     parser.add_argument("-p", "--port", type=int, default=161, help="Target SNMP port.")
     parser.add_argument("-l", "--list", type=argparse.FileType("r"), help="Target list.")
     parser.add_argument("-c", "--community", type=str, default="public", help="Community name.")
